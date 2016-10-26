@@ -1,4 +1,4 @@
-Create a dummy project:
+#### Create a dummy project:
 
     docker run -it --rm \
         --user "$(id -u):$(id -g)" \
@@ -16,11 +16,11 @@ Create a dummy project:
 
 You should see a `dummy` project in your working folder
 
-Delete the dummy
+#### Delete the dummy
 
     rm -rf dummy
 
-Create a real project
+#### Create a real project
 
     docker run -it --rm \
         --user "$(id -u):$(id -g)" \
@@ -29,11 +29,11 @@ Create a real project
         rails:4 \
         rails new --skip-bundle cloudgenius
 
-Examine your newly create app skeleton
+#### Examine your newly create app skeleton
 
     cd cloudgenius
 
-Setup the foundation
+#### Setup the foundation
 
 Add a few gems to our `Gemfile` and make a few adjustments to our application to make it production ready.
 
@@ -46,7 +46,7 @@ Add the following lines to the bottom of your `Gemfile`:
 
 Remove `sqlite` gem from the `Gemfile`
 
-Change the Database Configuration
+#### Change the Database Configuration
 
 We will be using environment variables to configure our application. This change allows us to use the `DATABASE_URL`, while also allowing us to name our databases based on the environment in which they are being run.
 
@@ -68,7 +68,7 @@ production:
   url: <%= ENV['DATABASE_URL'].gsub('?', '_production?') %>
 ```
 
-Change the Secrets File
+#### Change the Secrets File
 
 We are setting each environment to use the same SECRET_TOKEN environment variable. This is fine, since it's value will be different in each environment.
 
@@ -90,7 +90,7 @@ production:
   <<: *default
 ```
 
-Update the Application Configuration
+#### Update the Application Configuration
 
 Add the following lines to your `config/application.rb` right after this lines `class Application < Rails::Application`
 
@@ -114,7 +114,7 @@ Add the following lines to your `config/application.rb` right after this lines `
 
 ```
 
-Create the Unicorn Config for use in production
+#### Create the Unicorn Config for use in production
 
 Create the `config/unicorn.rb` file and add the following content to it:
 
@@ -207,7 +207,7 @@ Sidekiq.configure_client do |config|
 end
 ```
 
-Create the Environment Variable File
+#### Create the Environment Variable File
 
 Create the `.cloudgenius.env` file and add the following code to it:
 
@@ -262,7 +262,7 @@ This `env` file allows us to configure the application without having to dive in
 This file would also hold information like mail login credentials or API keys. You should also add this file to your .gitignore.
 
 
-Dockerize this application
+#### Dockerize this application
 
 Create a `Dockerfile` with this content
 
@@ -312,7 +312,7 @@ VOLUME ["$INSTALL_PATH/public"]
 CMD bundle exec unicorn -c config/unicorn.rb
 ```
 
-Create a .dockerignore files with this content
+#### Create a .dockerignore files with this content
 
 ```
 .git
@@ -321,7 +321,7 @@ Gemfile.lock
 ```
 This is similar in concept to `.gitgnore` as it excludes matching files and folders from being built into your Docker image.
 
-Create Docker Compose configuration
+#### Create Docker Compose configuration
 
 Create `docker-compose.yml` file with the following content:
 
@@ -375,7 +375,7 @@ cloudgenius and sidekiq both have links to postgres and redis
 cloudgenius and sidekiq both read in environment variables from .cloudgenius.env
 sidekiq overwrites the default CMD to run sidekiq instead of Unicorn.
 
-Create the Volumes
+#### Create the Volumes
 
 In the `docker-compose.yml` file, we're referencing volumes that do not exist.
 
@@ -386,7 +386,7 @@ Create them by running:
 
 When data is saved in PostgreSQL or Redis, it is saved to these volumes on your work station. This way, you won't lose your data when you restart the service because Docker containers are stateless.
 
-Run Everything
+#### Run Everything
 
 Start up our stack by running the following:
 
@@ -413,7 +413,7 @@ cloudgenius_1  |  (PG::ConnectionBad)
 ```
 This is a completely normal error to expect when running a Rails application because we haven't initialized the database yet.
 
-Initialize the Database
+#### Initialize the Database
 
 Hit CTRL+C in the terminal to stop everything. If you see any errors, you can safely ignore them.
 
@@ -428,7 +428,7 @@ The first command should warn you that db/schema.rb doesn't exist yet, which is 
 db/schema.rb doesn't exist yet. Run `rake db:migrate` to create it, then try again. If you do not intend to use a database, you should instead alter /cloudgenius/config/application.rb to limit the frameworks that will be loaded.
 ```
 
-Run the stack again
+#### Run the stack again
 
 Now that our database is initialized, try running the following:
 
@@ -437,7 +437,7 @@ Now that our database is initialized, try running the following:
 Visit http://localhost:8000/ where you should be greeted with the typical Rails `Welcome aboard` page.
 
 
-Working with the Rails Application
+#### Working with the Rails Application
 
 Now that we've Dockerized our application, let's start adding features to it to exercise the commands you'll need to run to interact with your Rails application.
 
@@ -445,7 +445,7 @@ Right now the source code is on your work station, and that source code is being
 
 This means that if you were to edit a file, the changes would take effect instantly, but right now we have no routes or any CSS defined to test this.
 
-Generate a Controller
+#### Generate a Controller
 
 Run the following command to generate a Pages controller with a home action:
 
@@ -458,7 +458,7 @@ In a second or two, it should provide everything you would expect when generatin
 
 This type of command is how you'll run future Rails commands. If you wanted to generate a model or run a migration, you would run them in the same way.
 
-Modify the Routes File
+#### Modify the Routes File
 
 Edit the `config/routes.rb`
 
@@ -468,7 +468,7 @@ Remove the `get 'pages/home'` line near the top and replace it with the followin
 
 If you go back to your browser http://localhost:8000, you should see the new home page we set up.
 
-Add a New Job
+#### Add a New Job
 
 Use the following to add a new job:
 
@@ -476,7 +476,7 @@ Use the following to add a new job:
         cloudgenius \
         rails g job counter
 
-Modify the Counter Job
+#### Modify the Counter Job
 
 Look for `app/jobs/counter_job.rb` and replace the perform function. The result should look like this:
 
@@ -491,7 +491,7 @@ class CounterJob < ActiveJob::Base
 end
 ```
 
-Modify the Pages Controller
+#### Modify the Pages Controller
 
 In the file `app/controller/pages_controller.rb`, replace the home action to look like this:
 ```
@@ -507,13 +507,13 @@ class PagesController < ApplicationController
 end
 ```
 
-Modify the Home View
+#### Modify the Home View
 Edit the file `app/views/pages/home.html.erb` and replace make it look like this:
 ```
 <h1>The meaning of life is <%= @meaning_of_life %></h1>
 ```
 
-Restart the Rails Application
+#### Restart the Rails Application
 
 Restart the Rails server to pickup new jobs, so hit CTRL+C to stop everything, and then run `docker-compose up` again.
 
