@@ -262,7 +262,7 @@ Create a `Dockerfile` with this content
     FROM ruby:2.2.3-slim
 
     # Optionally set a maintainer name to let people know who made this image.
-    MAINTAINER Nick Janetakis <nick.janetakis@gmail.com>
+    MAINTAINER Nilesh <nilesh@cloudgeni.us>
 
     # Install dependencies:
     # - build-essential: To ensure certain gems can be compiled
